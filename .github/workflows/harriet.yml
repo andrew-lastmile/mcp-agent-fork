@@ -2,7 +2,7 @@ name: Harriet Canary
 
 on:
   schedule:
-    - cron: "0 * * * *"   # hourly (UTC)
+    - cron: "0 */6 * * *"   # hourly (UTC)
   workflow_dispatch:       # allow manual runs too
 
 permissions:
@@ -217,6 +217,20 @@ jobs:
             echo "AUTH_TEST_STDOUT_ESCAPED=$AUTH_TEST_STDOUT_ESCAPED"
             echo "NO_AUTH_TEST_STDOUT_ESCAPED=$NO_AUTH_TEST_STDOUT_ESCAPED"
           } >> "$GITHUB_ENV"
+
+      - name: Fail workflow if tests failed
+        if: always()
+        run: |
+          set -e
+          STATUS="${{ env.STATUS }}"
+          echo "Enforcing overall status: ${STATUS:-unknown}"
+
+          if [ "$STATUS" = "failure" ]; then
+            echo "At least one MCP canary test failed; marking workflow as failed."
+            exit 1
+          else
+            echo "Overall status is '$STATUS'; not failing workflow."
+          fi
 
       # --- Rich Slack notification ---
       - name: Notify Slack
