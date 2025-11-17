@@ -2,7 +2,7 @@ name: Harriet Canary
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # hourly (UTC)
+    - cron: "0 */1 * * *"   # hourly (UTC)
   workflow_dispatch:       # allow manual runs too
 
 permissions:
